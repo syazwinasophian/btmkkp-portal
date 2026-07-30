@@ -1,0 +1,66 @@
+/* Smooth Scroll */
+html { 
+    scroll-behavior: smooth; 
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.15); }
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-float { 
+    animation: float 4s ease-in-out infinite; 
+}
+
+.animate-pulse-glow { 
+    animation: pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+}
+
+.animate-slide-up { 
+    animation: slideInUp 0.3s ease-out forwards; 
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar { 
+    width: 5px; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-track { 
+    background: #f1f1f1; 
+    border-radius: 8px; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb { 
+    background: #9f1239; 
+    border-radius: 8px; 
+}
+
+/* Card Interactive Hover Effect */
+.card-interactive {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px -5px rgba(136, 19, 55, 0.12);
+}
+
+/* Button Micro-interaction */
+.btn-bounce {
+    transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.btn-bounce:active { 
+    transform: scale(0.95); 
+}

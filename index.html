@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Rasmi BTMKKP - Kumpulan Yayasan Sabah</title>
+<!-- Tailwind CSS via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<!-- Custom External CSS -->
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-amber-50/20 text-stone-800 font-sans flex flex-col min-h-screen relative overflow-x-hidden">
+
+<!-- TOAST NOTIFICATION POPUP -->
+<div id="toastNotification" class="fixed bottom-5 left-5 z-50 transform -translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-stone-900 text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 border-l-4 border-amber-500 max-w-md">
+    <div id="toasticon" class="w-7 h-7 bg-amber-500/20 text-amber-400 rounded-lg flex items-center justify-center shrink-0">
+        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+    </div>
+    <div>
+        <h5 id="toastTitle" class="text-xs font-bold text-amber-400 uppercase tracking-wider" data-i18n="toast_notification">Notifikasi</h5>
+        <p id="toastMessage" class="text-xs text-stone-200 mt-0.5" data-i18n="toast_default">Tindakan berjaya dilaksanakan.</p>
+    </div>
+</div>
+
+<!-- 1. TOP UTILITY BAR -->
+<div class="bg-rose-950 text-rose-200 text-xs py-1.5 px-4 border-b border-rose-900">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div class="flex items-center space-x-4">
+            <span data-i18n="top_portal_title">Portal Rasmi BTMKKP - Kumpulan Yayasan Sabah</span>
+            <span class="hidden md:inline text-rose-800">|</span>
+            <span class="hidden md:inline"><span data-i18n="top_today">Hari ini:</span>
+            <strong id="current-date" class="text-rose-100">30 Julai 2026</strong></span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-1 border-r border-rose-800 pr-3">
+                <span class="text-[10px] text-rose-300 mr-1" data-i18n="text_size">Saiz Teks:</span>
+                <button onclick="setTextSize('normal')" class="btn-bounce px-1.5 py-0.5 bg-rose-900 hover:bg-rose-800 text-white rounded font-bold">A-</button>
+                <button onclick="setTextSize('large')" class="btn-bounce px-1.5 py-0.5 bg-rose-900 hover:bg-rose-800 text-white rounded font-bold">A</button>
+                <button onclick="setTextSize('xlarge')" class="btn-bounce px-1.5 py-0.5 bg-rose-900 hover:bg-rose-800 text-white rounded font-bold">A+</button>
+            </div>
+            
+<!-- SWITCHER BAHASA (BM/EN) -->
+<div class="flex items-center space-x-1 font-semibold text-[11px]">
+    <button 
+        id="btnLangBm" 
+        onclick="setLanguage('bm')" 
+        class="text-amber-400 font-bold underline cursor-pointer hover:text-amber-300">
+        BM
+    </button>
+    <span class="text-rose-600">/</span>
+    <button 
+        id="btnLangEn" 
+        onclick="setLanguage('en')" 
+        class="text-rose-300 cursor-pointer hover:text-white">
+        EN
+    </button>
+</div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. MAIN HEADER -->
+<header class="bg-rose-900/95 backdrop-blur-md text-white shadow-md sticky top-0 z-40 border-b-2 border-amber-500 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+        <div class="flex items-center space-x-3 group cursor-pointer" onclick="window.scrollTo({top:0, behavior: 'smooth'})">
+            <div class="bg-white p-1.5 rounded-lg flex items-center justify-center shadow transition-transform duration-300 group-hover:scale-105">
+                <img src="logo.png" alt="Yayasan Sabah Logo" class="h-11 w-auto object-contain">
+            </div>
+            <div>
+                <h1 class="text-lg font-extrabold leading-none tracking-wide text-white group-hover:text-amber-300 transition-colors">YAYASAN SABAH GROUP</h1>
+                <p class="text-[11px] text-amber-300 font-medium mt-1 leading-tight" data-i18n="dept_name">Bahagian Teknologi Maklumat & Komunikasi & Keselamatan Kesihatan Pekerja (BTMKKP)</p>
+            </div>
+        </div>
+
+        <!-- NAVBAR -->
+        <nav class="hidden lg:flex items-center space-x-6 text-sm font-semibold text-rose-100">
+            <a href="#hero" class="hover:text-amber-300 transition-all py-2 border-b-2 border-transparent hover:border-amber-400" data-i18n="nav_home">Utama</a>
+            
+            <!-- DROPDOWN 1: PERKHIDMATAN -->
+            <div class="relative group py-5">
+                <a href="#services" class="hover:text-amber-300 transition-all flex items-center gap-1">
+                    <span data-i18n="nav_services">Perkhidmatan</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform group-hover:rotate-180"></i>
+                </a>
+                <div class="absolute left-0 top-full hidden group-hover:block w-64 bg-white text-stone-800 rounded-xl shadow-xl border border-rose-100 py-2 animate-slide-up z-50">
+                    <div class="px-3 py-1 text-[10px] font-bold text-rose-900 uppercase tracking-wider bg-rose-50/50">Aras 8 (KKP)</div>
+                    <a href="javascript:void(0)" onclick="openModal('ticketModal', 'hazard')" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold hover:bg-rose-50 hover:text-rose-900 transition">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                        <span data-i18n="sub_hazard">Lapor Bahaya & Hazard</span>
+                    </a>
+                    <a href="#services" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold hover:bg-rose-50 hover:text-rose-900 transition">
+                        <i data-lucide="heart-pulse" class="w-4 h-4 text-emerald-600"></i>
+                        <span data-i18n="sub_health">Program Kesihatan Pekerja</span>
+                    </a>
+                    <div class="px-3 py-1 text-[10px] font-bold text-rose-900 uppercase tracking-wider bg-rose-50/50 mt-1 border-t">Aras 22 (ICT)</div>
+                    <a href="javascript:void(0)" onclick="openModal('ticketModal', 'ict')" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold hover:bg-rose-50 hover:text-rose-900 transition">
+                        <i data-lucide="headphones" class="w-4 h-4 text-rose-700"></i>
+                        <span data-i18n="sub_helpdesk">Meja Bantuan Helpdesk ICT</span>
+                    </a>
+                    <a href="javascript:void(0)" onclick="showToast('Borang & SOP ICT/KKP dimuat turun', 'info')" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold hover:bg-rose-50 hover:text-rose-900 transition">
+                        <i data-lucide="folder-down" class="w-4 h-4 text-rose-700"></i>
+                        <span data-i18n="sub_forms">Borang & SOP ICT/KKP</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- DROPDOWN 2: STATUS & PENGUMUMAN -->
+            <div class="relative group py-5">
+                <a href="#status" class="hover:text-amber-300 transition-all flex items-center gap-1">
+                    <span data-i18n="nav_status">Status & Notis</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform group-hover:rotate-180"></i>
+                </a>
+                <div class="absolute left-0 top-full hidden group-hover:block w-52 bg-white text-stone-800 rounded-xl shadow-xl border border-rose-100 py-2 animate-slide-up z-50">
+                    <a href="#status" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold hover:bg-rose-50 hover:text-rose-900 transition">
+                        <i data-lucide="activity" class="w-4 h-4 text-emerald-600"></i>
+                        <span data-i18n="sub_network">Status Rangkaian Live</span>
+                    </a>
+                    <a href="#bulletins" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold hover:bg-rose-50 hover:text-rose-900 transition">
+                        <i data-lucide="bell" class="w-4 h-4 text-amber-600"></i>
+                        <span data-i18n="sub_announcements">Notis KKP & ICT</span>
+                    </a>
+                </div>
+            </div>
+
+            <a href="#pertanyaan" class="hover:text-amber-300 transition-all py-2 border-b-2 border-transparent hover:border-amber-400" data-i18n="nav_inquiries">Pertanyaan</a>
+            <a href="#location" class="hover:text-amber-300 transition-all py-2 border-b-2 border-transparent hover:border-amber-400" data-i18n="nav_location">Lokasi</a>
+        </nav>
+
+        <div class="flex items-center space-x-2">
+            <button onclick="openModal('ticketModal', 'hazard')" class="btn-bounce bg-amber-500 hover:bg-amber-400 text-stone-950 px-3 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+                <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                <span data-i18n="btn_lapor_hazard">Lapor Hazard</span>
+            </button>
+            <button onclick="openModal('ticketModal', 'ict')" class="btn-bounce bg-rose-800 hover:bg-rose-700 text-white border border-rose-600 px-3 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+                <i data-lucide="headphones" class="w-4 h-4"></i>
+                <span data-i18n="btn_new_ticket">Tiket ICT</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- 3. HERO BANNER SECTION -->
+<section id="hero" class="bg-gradient-to-r from-rose-950 via-rose-900 to-red-950 text-white py-16 px-4 border-b-4 border-amber-500 relative overflow-hidden">
+    <div class="absolute -top-12 -left-12 w-64 h-64 bg-rose-800/20 rounded-full blur-3xl animate-float pointer-events-none"></div>
+    <div class="absolute -bottom-16 -right-16 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl animate-float pointer-events-none" style="animation-delay: -2s;"></div>
+    
+    <div class="max-w-7xl mx-auto text-center relative z-10">
+        <span class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 text-xs px-3.5 py-1 rounded-full font-bold uppercase tracking-wider mb-4 border border-amber-500/40 shadow-inner">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span data-i18n="hero_badge">Pusat Perkhidmatan Integrasi Aras 8 (KKP) & Aras 22 (ICT)</span>
+        </span>
+        <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 leading-tight" data-i18n="hero_title">
+            Portal E-Perkhidmatan BTMKKP
+        </h2>
+        <p class="text-rose-100 max-w-2xl mx-auto text-sm md:text-base leading-relaxed" data-i18n="hero_desc">
+            Satu platform bersepadu untuk permohonan sokongan teknikal ICT, bantuan infrastruktur digital, serta pelaporan hazard dan keselamatan kesihatan pekerja Menara Tun Mustapha.
+        </p>
+        <div class="mt-8 max-w-2xl mx-auto relative group">
+            <div class="flex items-center bg-white rounded-xl shadow-2xl p-2 border border-rose-200 transition-all duration-300 focus-within:ring-4 focus-within:ring-amber-500/30">
+                <i data-lucide="search" class="w-5 h-5 text-stone-400 ml-2 group-focus-within:text-rose-800 transition-colors"></i>
+                <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Cari perkhidmatan ICT / KKP (cth: Reset Password, Wi-Fi, Lapor Hazard, Borang)" class="bg-transparent w-full px-3 py-1.5 text-sm text-stone-800 focus:outline-none placeholder-stone-400">
+                <button onclick="triggerSearchAlert()" class="btn-bounce bg-rose-900 hover:bg-rose-800 text-white px-5 py-2 rounded-lg text-xs font-bold transition" data-i18n="btn_search">Cari</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. QUICK STATS STRIP -->
+<div class="bg-white border-b border-rose-100 py-5 px-4 shadow-sm">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div class="p-2 card-interactive rounded-xl">
+            <p class="text-2xl md:text-3xl font-black text-rose-900">Aras 8</p>
+            <p class="text-xs text-stone-500 font-medium mt-1" data-i18n="stat_kkp">Keselamatan Kesihatan Pekerja (KKP)</p>
+        </div>
+        <div class="p-2 card-interactive rounded-xl border-l border-rose-100">
+            <p class="text-2xl md:text-3xl font-black text-rose-900">Aras 22</p>
+            <p class="text-xs text-stone-500 font-medium mt-1" data-i18n="stat_ict">Teknologi Maklumat & Komunikasi (ICT)</p>
+        </div>
+        <div class="p-2 card-interactive rounded-xl border-l border-rose-100">
+            <p class="text-2xl md:text-3xl font-black text-rose-900">99.8%</p>
+            <p class="text-xs text-stone-500 font-medium mt-1" data-i18n="stat_uptime">Uptime Pelayan Utama</p>
+        </div>
+        <div class="p-2 card-interactive rounded-xl border-l border-rose-100">
+            <p class="text-2xl md:text-3xl font-black text-rose-900">&lt; 24 Jam</p>
+            <p class="text-xs text-stone-500 font-medium mt-1" data-i18n="stat_response">Respon Aduan / Tiket</p>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT CONTAINER -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 flex-grow">
+    
+    <!-- DUAL WING SERVICES SECTION -->
+    <section id="services">
+        <div class="border-b border-rose-200 pb-3 mb-6 flex justify-between items-end">
+            <h3 class="text-xl font-bold text-rose-950 flex items-center gap-2">
+                <i data-lucide="layout-grid" class="w-5 h-5 text-rose-800"></i>
+                <span data-i18n="services_header">Perkhidmatan Utama mengikut Aras</span>
+            </h3>
+            <span class="text-xs text-stone-400 font-medium" data-i18n="services_subtitle">Klik kad untuk tindakan terus</span>
+        </div>
+
+        <!-- ARAS 8: KKP SECTION -->
+        <div class="mb-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="bg-amber-500 text-stone-950 text-xs font-black px-2.5 py-1 rounded-md">ARAS 8</span>
+                <h4 class="font-extrabold text-stone-800 text-base" data-i18n="title_kkp_wing">Unit Keselamatan & Kesihatan Pekerja (KKP)</h4>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card-interactive bg-white p-6 rounded-xl border-l-4 border-l-amber-500 border border-rose-100 shadow-sm group cursor-pointer" onclick="openModal('ticketModal', 'hazard')">
+                    <div class="w-12 h-12 bg-amber-50 text-amber-700 rounded-lg flex items-center justify-center mb-4 group-hover:bg-amber-500 group-hover:text-stone-950 transition-all duration-300">
+                        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                    </div>
+                    <h5 class="font-bold text-stone-900 mb-1 group-hover:text-amber-700 transition-colors" data-i18n="card_hazard_title">E-Borang Lapor Hazard</h5>
+                    <p class="text-xs text-stone-500 mb-4" data-i18n="card_hazard_desc">Laporkan keadaan bahaya, kecederaan, atau risiko keselamatan di pejabat.</p>
+                    <span class="text-xs font-bold text-amber-700 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                        <span data-i18n="card_hazard_btn">Hantar Laporan</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                    </span>
+                </div>
+
+                <div class="card-interactive bg-white p-6 rounded-xl border-l-4 border-l-emerald-500 border border-rose-100 shadow-sm group cursor-pointer" onclick="showToast('Panduan Laluan Kecemasan & Pelan Menara dimuat turun...', 'info')">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+                        <i data-lucide="siren" class="w-6 h-6"></i>
+                    </div>
+                    <h5 class="font-bold text-stone-900 mb-1 group-hover:text-emerald-700 transition-colors" data-i18n="card_evac_title">Pelan Evakuasi & Kecemasan</h5>
+                    <p class="text-xs text-stone-500 mb-4" data-i18n="card_evac_desc">Panduan laluan keselamatan, senarai Pegawai Insiden & Pasukan Pertolongan Cemas.</p>
+                    <span class="text-xs font-bold text-emerald-700 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                        <span data-i18n="card_evac_btn">Semak Pelan</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                    </span>
+                </div>
+
+                <div class="card-interactive bg-white p-6 rounded-xl border-l-4 border-l-blue-500 border border-rose-100 shadow-sm group cursor-pointer" onclick="showToast('Program Bulan OSH & Aktiviti Kesihatan Terkini', 'info')">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-700 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                        <i data-lucide="heart-pulse" class="w-6 h-6"></i>
+                    </div>
+                    <h5 class="font-bold text-stone-900 mb-1 group-hover:text-blue-700 transition-colors" data-i18n="card_health_title">Program Kesihatan Pekerja</h5>
+                    <p class="text-xs text-stone-500 mb-4" data-i18n="card_health_desc">Info Bulan OSH, pemeriksaan kesihatan berkala, dan tips ergonomik pejabat.</p>
+                    <span class="text-xs font-bold text-blue-700 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                        <span data-i18n="card_health_btn">Lihat Aktiviti</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ARAS 22: ICT SECTION -->
+        <div>
+            <div class="flex items-center gap-2 mb-4">
+                <span class="bg-rose-900 text-white text-xs font-black px-2.5 py-1 rounded-md">ARAS 22</span>
+                <h4 class="font-extrabold text-stone-800 text-base" data-i18n="title_ict_wing">Unit Teknologi Maklumat & Komunikasi (ICT)</h4>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card-interactive bg-white p-6 rounded-xl border-l-4 border-l-rose-900 border border-rose-100 shadow-sm group cursor-pointer" onclick="openModal('ticketModal', 'ict')">
+                    <div class="w-12 h-12 bg-rose-50 text-rose-800 rounded-lg flex items-center justify-center mb-4 group-hover:bg-rose-900 group-hover:text-white transition-all duration-300">
+                        <i data-lucide="headphones" class="w-6 h-6"></i>
+                    </div>
+                    <h5 class="font-bold text-stone-900 mb-1 group-hover:text-rose-900 transition-colors" data-i18n="card_helpdesk_title">Meja Bantuan ICT</h5>
+                    <p class="text-xs text-stone-500 mb-4" data-i18n="card_helpdesk_desc">Aduan baiki PC, Laptop, Printer, Capaian Wi-Fi, dan Reset Password.</p>
+                    <span class="text-xs font-bold text-rose-800 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                        <span data-i18n="card_helpdesk_btn">Buka Tiket ICT</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                    </span>
+                </div>
+
+                <div class="card-interactive bg-white p-6 rounded-xl border-l-4 border-l-purple-600 border border-rose-100 shadow-sm group cursor-pointer" onclick="scrollToSection('pertanyaan')">
+                    <div class="w-12 h-12 bg-purple-50 text-purple-700 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
+                        <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                    </div>
+                    <h5 class="font-bold text-stone-900 mb-1 group-hover:text-purple-700 transition-colors" data-i18n="card_cyber_title">Keselamatan Siber</h5>
+                    <p class="text-xs text-stone-500 mb-4" data-i18n="card_cyber_desc">Lapor e-mel Phishing, jangkitan virus, atau permohonan Akses VPN Korporat.</p>
+                    <span class="text-xs font-bold text-purple-700 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                        <span data-i18n="card_cyber_btn">Keselamatan ICT</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                    </span>
+                </div>
+
+                <div class="card-interactive bg-white p-6 rounded-xl border-l-4 border-l-stone-700 border border-rose-100 shadow-sm group cursor-pointer" onclick="showToast('Borang & SOP ICT/KKP dimuat turun', 'info')">
+                    <div class="w-12 h-12 bg-stone-100 text-stone-800 rounded-lg flex items-center justify-center mb-4 group-hover:bg-stone-800 group-hover:text-white transition-all duration-300">
+                        <i data-lucide="folder-down" class="w-6 h-6"></i>
+                    </div>
+                    <h5 class="font-bold text-stone-900 mb-1 group-hover:text-stone-800 transition-colors" data-i18n="card_forms_title">Muat Turun Borang ICT & SOP</h5>
+                    <p class="text-xs text-stone-500 mb-4" data-i18n="card_forms_desc">Borang Pinjaman Peralatan, Akaun E-Mel Baru, Polisi ICT & Manual Pengguna.</p>
+                    <span class="text-xs font-bold text-stone-800 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                        <span data-i18n="card_forms_btn">Muat Turun</span> <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- SYSTEM STATUS & BULLETINS -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start" id="bulletins">
+  
+  <!-- SYSTEM STATUS (Fixed: added self-start so it won't stretch vertically) -->
+  <section id="status" class="lg:col-span-2 self-start bg-white p-6 rounded-xl border border-rose-100 shadow-sm">
+    <div class="flex items-center justify-between mb-6 border-b border-rose-100 pb-3">
+      <h3 class="text-lg font-bold text-stone-900 flex items-center gap-2">
+        <i data-lucide="activity" class="w-5 h-5 text-emerald-600"></i>
+        <span data-i18n="status_header">Status Perkhidmatan Live</span>
+      </h3>
+      <span class="text-xs text-stone-400 flex items-center gap-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span data-i18n="status_live">Aktif</span>
+      </span>
+    </div>
+
+    <!-- Live service statuses from PostgreSQL render inside this container -->
+    <div id="statusListContainer" class="space-y-3">
+      <div class="card-interactive flex items-center justify-between p-3.5 bg-stone-50 rounded-lg border border-stone-100">
+        <div class="flex items-center space-x-3">
+          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+          <span class="font-medium text-sm text-stone-700" data-i18n="sys_wifi">Rangkaian Wi-Fi Menara (YSG-STAFF)</span>
+        </div>
+        <span class="text-xs bg-emerald-100 text-emerald-700 font-semibold px-2.5 py-1 rounded-full" data-i18n="status_operational">Beroperasi</span>
+      </div>
+
+      <div class="card-interactive flex items-center justify-between p-3.5 bg-stone-50 rounded-lg border border-stone-100">
+        <div class="flex items-center space-x-3">
+          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+          <span class="font-medium text-sm text-stone-700" data-i18n="sys_email">Pelayan E-Mel Korporat (Microsoft Exchange)</span>
+        </div>
+        <span class="text-xs bg-emerald-100 text-emerald-700 font-semibold px-2.5 py-1 rounded-full" data-i18n="status_operational">Beroperasi</span>
+      </div>
+
+      <div class="card-interactive flex items-center justify-between p-3.5 bg-stone-50 rounded-lg border border-stone-100">
+        <div class="flex items-center space-x-3">
+          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+          <span class="font-medium text-sm text-stone-700" data-i18n="sys_kkp_alarm">Sistem Penggera Kecemasan & Lif Menara</span>
+        </div>
+        <span class="text-xs bg-emerald-100 text-emerald-700 font-semibold px-2.5 py-1 rounded-full" data-i18n="status_operational">Normal</span>
+      </div>
+
+      <div class="card-interactive flex items-center justify-between p-3.5 bg-stone-50 rounded-lg border border-stone-100">
+        <div class="flex items-center space-x-3">
+          <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+          <span class="font-medium text-sm text-stone-700" data-i18n="sys_erp">Sistem ERP Intranet</span>
+        </div>
+        <span class="text-xs bg-amber-100 text-amber-700 font-semibold px-2.5 py-1 rounded-full" data-i18n="status_maintenance">Penyelenggaraan</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- DYNAMIC NOTICES (KKP & ICT) -->
+  <section id="status-notis" class="bg-white p-6 rounded-xl border border-rose-100 shadow-sm">
+    <h3 class="text-lg font-bold text-stone-900 mb-4 border-b border-rose-100 pb-3 flex items-center gap-2">
+      <i data-lucide="bell" class="w-5 h-5 text-amber-600"></i>
+      <span data-i18n="bulletin_header">Notis KKP & ICT</span>
+    </h3>
+
+    <!-- Live PostgreSQL Notices Render Inside Here (Max height added for tidy scrolling) -->
+    <div id="noticesContainer" class="space-y-4 max-h-[450px] overflow-y-auto pr-1">
+      <div class="card-interactive border-l-4 border-amber-500 pl-3 py-2 bg-stone-50/50 rounded-r-lg cursor-pointer" onclick="showToast('Pemberitahuan Latihan Kebakaran', 'info')">
+        <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold uppercase">KKP - Aras 8</span>
+        <h5 class="text-xs font-bold text-stone-800 mt-1" data-i18n="announcement_1_title">Latihan Evakuasi Kebakaran Menara Tun Mustapha</h5>
+        <p class="text-xs text-stone-500 mt-0.5" data-i18n="announcement_1_desc">Akan dijalankan pada bulan hadapan. Sila semak Pegawai Insiden lantai anda.</p>
+      </div>
+
+      <div class="card-interactive border-l-4 border-rose-800 pl-3 py-2 bg-stone-50/50 rounded-r-lg cursor-pointer" onclick="showToast('Amaran Keselamatan Siber dipaparkan', 'info')">
+        <span class="text-[10px] bg-rose-100 text-rose-900 px-2 py-0.5 rounded font-bold uppercase">ICT - Aras 22</span>
+        <h5 class="text-xs font-bold text-stone-800 mt-1" data-i18n="announcement_2_title">Peringatan: Amaran Phishing E-Mel Kewangan</h5>
+        <p class="text-xs text-stone-500 mt-0.5" data-i18n="announcement_2_desc">Jangan klik pautan luar yang meminta nama pengguna & kata laluan.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+    <!-- RUANGAN PERTANYAAN SECTION -->
+    <section id="pertanyaan" class="py-4">
+        <h3 class="text-2xl md:text-3xl font-bold text-rose-950 text-center mb-6" data-i18n="inquiry_header">
+            Ruangan Pertanyaan Umum
+        </h3>
+        <div class="bg-white border border-rose-100 rounded-2xl p-6 md:p-10 shadow-sm max-w-4xl mx-auto">
+            <form onsubmit="handleInquirySubmit(event)" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-stone-700 mb-1.5" data-i18n="form_name">Nama Pemohon</label>
+                        <input type="text" required class="w-full border border-stone-300 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-rose-800 focus:ring-2 focus:ring-rose-800/20 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-700 mb-1.5" data-i18n="form_email">Emel Korporat</label>
+                        <input type="email" required class="w-full border border-stone-300 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-rose-800 focus:ring-2 focus:ring-rose-800/20 transition-all">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-stone-700 mb-1.5" data-i18n="form_wing">Tujuan Pertanyaan</label>
+                        <select class="w-full border border-stone-300 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-rose-800 focus:ring-2 focus:ring-rose-800/20 transition-all">
+                            <option data-i18n="opt_target_ict">ICT (Aras 22) - Sistem / Perkakasan / Wi-Fi</option>
+                            <option data-i18n="opt_target_kkp">KKP (Aras 8) - Keselamatan / Hazard / Kesihatan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-700 mb-1.5" data-i18n="form_subject">Perkara / Tajuk</label>
+                        <input type="text" required class="w-full border border-stone-300 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-rose-800 focus:ring-2 focus:ring-rose-800/20 transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-stone-700 mb-1.5" data-i18n="form_message">Mesej / Detail Pertanyaan</label>
+                    <textarea rows="4" required class="w-full border border-stone-300 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-rose-800 focus:ring-2 focus:ring-rose-800/20 transition-all resize-y"></textarea>
+                </div>
+                <div class="flex justify-center pt-2">
+                    <button type="submit" class="btn-bounce bg-rose-900 hover:bg-rose-800 text-white font-bold px-8 py-3 rounded-xl text-xs transition shadow-md flex items-center gap-2">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                        <span data-i18n="form_btn_send">Hantar Mesej</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- LOCATION & MAPS SECTION -->
+    <section id="location" class="bg-white p-6 rounded-xl border border-rose-100 shadow-sm">
+        <h3 class="text-xl font-bold text-stone-900 mb-6 flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-5 h-5 text-rose-800"></i>
+            <span data-i18n="location_header">Lokasi & Talian Pejabat</span>
+        </h3>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            <div class="space-y-6">
+                <div class="bg-rose-50/50 p-5 rounded-xl border border-rose-100 space-y-3 card-interactive">
+                    <span class="inline-block bg-rose-900 text-white text-xs px-2.5 py-0.5 rounded font-semibold" data-i18n="office_main">Pejabat Utama</span>
+                    <h4 class="font-bold text-stone-900 text-sm md:text-base leading-snug" data-i18n="dept_full_name">
+                        Bahagian Teknologi Maklumat dan Komunikasi & Keselamatan Kesihatan Pekerja (BTMKKP)
+                    </h4>
+                    <p class="text-stone-600 text-xs leading-relaxed" data-i18n="office_address">
+                        Aras 8 (KKP) & Aras 22 (ICT), Menara Tun Mustapha, <br>
+                        Kompleks Ibu Pejabat Kumpulan Yayasan Sabah, <br>
+                        Teluk Likas, 88817 Kota Kinabalu, Sabah.
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <h5 class="text-xs font-bold text-stone-500 uppercase tracking-wider" data-i18n="office_lines">Talian Pejabat mengikut Unit</h5>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <a href="tel:+6088420804" class="card-interactive flex items-center gap-3 p-3 bg-stone-50 hover:bg-rose-50 rounded-lg border border-stone-200 transition">
+                            <div class="w-8 h-8 bg-amber-100 text-amber-900 rounded-full flex items-center justify-center shrink-0 font-bold text-xs">A8</div>
+                            <div>
+                                <p class="text-[10px] text-stone-400 font-bold uppercase" data-i18n="line_lvl8">Aras 8 - Unit KKP</p>
+                                <p class="text-xs font-bold text-stone-800">+(60) 88 420804</p>
+                            </div>
+                        </a>
+                        <a href="tel:+6088326662" class="card-interactive flex items-center gap-3 p-3 bg-stone-50 hover:bg-rose-50 rounded-lg border border-stone-200 transition">
+                            <div class="w-8 h-8 bg-rose-100 text-rose-900 rounded-full flex items-center justify-center shrink-0 font-bold text-xs">A22</div>
+                            <div>
+                                <p class="text-[10px] text-stone-400 font-bold uppercase" data-i18n="line_lvl22_1">Aras 22 - ICT Talian 1</p>
+                                <p class="text-xs font-bold text-stone-800">+(60) 88 326662</p>
+                            </div>
+                        </a>
+                        <a href="tel:+6088326365" class="card-interactive flex items-center gap-3 p-3 bg-stone-50 hover:bg-rose-50 rounded-lg border border-stone-200 transition sm:col-span-2">
+                            <div class="w-8 h-8 bg-rose-100 text-rose-900 rounded-full flex items-center justify-center shrink-0 font-bold text-xs">A22</div>
+                            <div>
+                                <p class="text-[10px] text-stone-400 font-bold uppercase" data-i18n="line_lvl22_2">Aras 22 - ICT Talian 2</p>
+                                <p class="text-xs font-bold text-stone-800">+(60) 88 326365</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full h-[320px] rounded-xl overflow-hidden border border-rose-100 shadow-sm relative bg-stone-100 card-interactive">
+                <iframe
+                    title="Yayasan Sabah Menara Tun Mustapha Map"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.8920155097067!2d116.1070566!3d6.0149021!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x323b6eb4e8c46ef5%3A0x6b4020a4b7556a31!2sMenara%20Tun%20Mustapha!5e0!3m2!1sen!2smy!4v1700000000000!5m2!1sen!2smy"
+                    class="w-full h-full border-0"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- TICKET & HAZARD MODAL DYNAMIC -->
+<div id="ticketModal" class="fixed inset-0 bg-stone-950/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-4 relative border border-rose-100 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="flex justify-between items-center border-b pb-3 sticky top-0 bg-white z-10">
+            <h3 id="modalHeaderTitle" class="text-base font-bold text-rose-950 flex items-center gap-2">
+                <i data-lucide="edit-3" class="w-5 h-5 text-rose-800"></i>
+                <span>Borang Penyerahan BTMKKP</span>
+            </h3>
+            <button onclick="closeModal('ticketModal')" class="btn-bounce text-stone-400 hover:text-stone-600 p-1 rounded-lg">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <form onsubmit="handleFormSubmit(event)" class="space-y-3 text-xs">
+            <div>
+                <label class="block font-bold text-stone-700 mb-1" data-i18n="modal_wing_select">Pilih Unit Bahagian</label>
+                <select id="formWingSelect" onchange="toggleFormFields(this.value)" class="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-rose-800/20 focus:border-rose-800 border-stone-300 transition-all font-semibold">
+                    <option value="ict">Aras 22: Unit ICT (Tiket Helpdesk / Teknikal)</option>
+                    <option value="hazard">Aras 8: Unit KKP (Laporan Hazard / Keselamatan)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold text-stone-700 mb-1" data-i18n="modal_name">Nama Pemohon / Pelapor</label>
+                <input type="text" required placeholder="Contoh: Ahmad Razali" class="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-rose-800/20 focus:border-rose-800 border-stone-300 transition-all">
+            </div>
+            <div>
+                <label class="block font-bold text-stone-700 mb-1" data-i18n="modal_floor">Lokasi / Tingkat Menara</label>
+                <input type="text" required placeholder="Contoh: Aras 12, Bahagian Kewangan" class="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-rose-800/20 focus:border-rose-800 border-stone-300 transition-all">
+            </div>
+            <div id="ictCatGroup">
+                <label class="block font-bold text-stone-700 mb-1" data-i18n="modal_cat_ict">Kategori Isu ICT</label>
+                <select class="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-rose-800/20 focus:border-rose-800 border-stone-300 transition-all">
+                    <option data-i18n="opt_hw">Perkakasan (PC/Laptop / Printer)</option>
+                    <option data-i18n="opt_net">Rangkaian & Internet/Wi-Fi</option>
+                    <option data-i18n="opt_acc">Akaun & E-Mel Korporat</option>
+                    <option data-i18n="opt_sec">Keselamatan Siber / Virus</option>
+                </select>
+            </div>
+            <div id="hazardCatGroup" class="hidden">
+                <label class="block font-bold text-stone-700 mb-1" data-i18n="modal_cat_hazard">Jenis Hazard / Risiko KKP</label>
+                <select class="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-rose-800/20 focus:border-rose-800 border-stone-300 transition-all">
+                    <option data-i18n="opt_fizikal">Fizikal (Lantai Licin / Wayar Terdedah / Bunyi Bising)</option>
+                    <option data-i18n="opt_ergo">Ergonomik (Kerusi Rosak / Postur Kerja)</option>
+                    <option data-i18n="opt_kebakaran">Risiko Kebakaran / Halangan Laluan Kecemasan</option>
+                    <option data-i18n="opt_kesihatan">Kesihatan / Kebersihan Persekitaran Pejabat</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold text-stone-700 mb-1" data-i18n="modal_desc">Keterangan Laporan / Masalah</label>
+                <textarea rows="3" required placeholder="Jelaskan butiran lanjut mengenai isu atau hazard..." class="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-rose-800/20 focus:border-rose-800 border-stone-300 transition-all"></textarea>
+            </div>
+            <div class="pt-2 flex justify-end space-x-2">
+                <button type="button" onclick="closeModal('ticketModal')" class="btn-bounce px-4 py-2 border rounded-lg text-stone-600 font-semibold hover:bg-stone-50" data-i18n="modal_cancel">Batal</button>
+                <button type="submit" class="btn-bounce px-5 py-2 bg-rose-900 hover:bg-rose-800 text-white rounded-lg font-semibold shadow-md" data-i18n="modal_submit">Hantar Laporan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 5. FOOTER -->
+<footer class="bg-rose-950 text-rose-200 border-t border-rose-900 text-xs pt-10 pb-6">
+    <div class="max-w-7xl mx-auto px-4 space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-6 border-b border-rose-900">
+            <div class="space-y-3">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white p-1 rounded shadow">
+                        <img src="logo.png" alt="Yayasan Sabah Logo" class="h-8 w-auto object-contain">
+                    </div>
+                    <span class="font-bold text-white tracking-wider">YAYASAN SABAH GROUP</span>
+                </div>
+                <p class="text-rose-300 leading-relaxed text-[11px]" data-i18n="footer_address">
+                    Bahagian Teknologi Maklumat dan Komunikasi & Keselamatan Kesihatan Pekerja (BTMKKP), Aras 8 & 22, Menara Tun Mustapha, Kota Kinabalu, Sabah.
+                </p>
+            </div>
+            <div>
+                <h5 class="text-amber-400 font-bold mb-3 uppercase tracking-wider text-[11px]" data-i18n="footer_quick_links">Pautan Pantas</h5>
+                <ul class="space-y-1.5 text-[11px]">
+                    <li><a href="#services" class="hover:text-amber-300 transition-colors">&bull; <span data-i18n="services_header">Perkhidmatan ICT & KKP</span></a></li>
+                    <li><a href="#status" class="hover:text-amber-300 transition-colors">&bull; <span data-i18n="status_header">Status Rangkaian Live</span></a></li>
+                    <li><a href="#pertanyaan" class="hover:text-amber-300 transition-colors">&bull; <span data-i18n="inquiry_header">Ruangan Pertanyaan</span></a></li>
+                    <li><a href="#location" class="hover:text-amber-300 transition-colors">&bull; <span data-i18n="location_header">Lokasi Aras 8 & 22</span></a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-amber-400 font-bold mb-3 uppercase tracking-wider text-[11px]" data-i18n="footer_policy_title">Polisi & Statistik</h5>
+                <div class="space-y-1 text-[11px] text-rose-300 mb-3">
+                    <p data-i18n="footer_policies">Penafian &bull; Dasar Privasi &bull; Polisi Keselamatan OSH & ICT</p>
+                    <p data-i18n="footer_browser">Paparan Terbaik: Google Chrome / Edge</p>
+                </div>
+                <div class="bg-rose-900/60 border border-rose-800 p-2.5 rounded-lg text-[11px] flex items-center justify-between">
+                    <span class="text-rose-300" data-i18n="footer_visitors">Jumlah Pelawat Portal:</span>
+                    <span class="font-mono font-bold text-amber-400 text-sm">128,420</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col sm:flex-row justify-between items-center text-[11px] text-rose-400 gap-2">
+            <p data-i18n="footer_copyright">Hak Cipta Terelihara &copy; 2026 Kumpulan Yayasan Sabah.</p>
+            <p class="tracking-widest font-semibold">DINAMIK &bull; BERJIWA RAKYAT &bull; KOMITED &bull; PRIHATIN</p>
+        </div>
+    </div>
+</footer>
+
+<!-- ACCESSIBILITY TRIGGER BUTTON -->
+<button onclick="toggleAccessibilityMenu()" class="btn-bounce fixed right-0 top-1/2 -translate-y-1/2 bg-rose-900 hover:bg-rose-800 text-white font-bold px-2 py-4 rounded-l-xl shadow-2xl flex flex-col items-center gap-1 z-50 transition-all border-l-2 border-y-2 border-amber-500">
+    <i data-lucide="accessibility" class="w-6 h-6 animate-pulse"></i>
+    <span class="text-xs tracking-widest uppercase [writing-mode:vertical-lr] font-bold">OKU</span>
+</button>
+
+<!-- ACCESSIBILITY WIDGET POPUP -->
+<div id="accessibilityWidget" class="fixed top-12 left-1/2 -translate-x-1/2 md:left-auto md:right-14 md:translate-x-0 w-[92%] max-w-[340px] max-h-[calc(100vh-5rem)] bg-white rounded-3xl shadow-2xl border border-rose-100 z-50 hidden font-sans text-stone-800 flex flex-col overflow-hidden">
+    <div class="flex items-center justify-between p-4 pb-3 border-b border-stone-100 bg-white rounded-t-3xl shrink-0">
+        <div class="flex items-center gap-2 text-rose-900 font-bold text-sm">
+            <i data-lucide="accessibility" class="w-5 h-5"></i>
+            <span data-i18n="acc_title">Alat Kebolehcapaian</span>
+        </div>
+        <button onclick="toggleAccessibilityMenu()" class="text-stone-400 hover:text-stone-600 transition p-1 rounded-lg">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+    </div>
+    <div class="p-4 overflow-y-auto space-y-4 custom-scrollbar flex-1 min-h-0">
+        <div>
+            <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5" data-i18n="text_size">Saiz Teks</label>
+            <div class="grid grid-cols-3 gap-2">
+                <button id="btn-font-a" onclick="setTextSize('normal')" class="py-2 rounded-xl border font-extrabold text-sm transition bg-rose-900 text-white border-rose-900">A</button>
+                <button id="btn-font-aplus" onclick="setTextSize('large')" class="py-2 rounded-xl border font-extrabold text-sm transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50">A+</button>
+                <button id="btn-font-aplusplus" onclick="setTextSize('xlarge')" class="py-2 rounded-xl border font-extrabold text-sm transition bg-white text-stone-700 border-stone-200 hover:bg-stone-50">A++</button>
+            </div>
+        </div>
+        <div>
+            <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5" data-i18n="acc_color_display">Warna & Paparan</label>
+            <div class="space-y-2">
+                <div class="flex items-center justify-between p-2.5 rounded-xl border border-stone-200 bg-white shadow-sm">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-stone-700">
+                        <i data-lucide="contrast" class="w-4 h-4 text-stone-500"></i>
+                        <span data-i18n="acc_grayscale">Mod Greiskala</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggleGrayscale" onchange="toggleGrayscale(this.checked)" class="sr-only peer">
+                        <div class="w-9 h-5 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-900"></div>
+                    </label>
+                </div>
+                <div class="flex items-center justify-between p-2.5 rounded-xl border border-stone-200 bg-white shadow-sm">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-stone-700">
+                        <i data-lucide="sun" class="w-4 h-4 text-stone-500"></i>
+                        <span data-i18n="acc_contrast">Kontras Tinggi</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggleHighContrast" onchange="toggleHighContrast(this.checked)" class="sr-only peer">
+                        <div class="w-9 h-5 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-900"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <button onclick="resetAccessibility()" class="w-full py-2.5 border border-stone-200 rounded-xl text-stone-600 font-bold text-xs flex items-center justify-center gap-2 hover:bg-stone-50 transition shadow-sm mt-2">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            <span data-i18n="acc_reset">Reset Semua</span>
+        </button>
+    </div>
+</div>
+
+<!-- Dynamic Style Injection for Accessibility -->
+<style id="accessibility-styles"></style>
+
+<!-- Custom External Script -->
+<script src="script.js"></script>
+</body>
+</html>
