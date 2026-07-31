@@ -152,5 +152,9 @@ app.post('/api/services', async (req, res) => {
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, '0.0.0.0', async () => {
     console.log(`Server running on port ${PORT}`);
-    await cleanDuplicateNotices(); // Clean db duplicates on boot
+    try {
+        await cleanDuplicateNotices();
+    } catch (err) {
+        console.log('⚠️ Cleanup skipped (Tables not created yet):', err.message);
+    }
 });
