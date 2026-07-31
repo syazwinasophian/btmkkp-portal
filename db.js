@@ -1,17 +1,13 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const connectionString = process.env.DATABASE_URL;
-
 const pool = new Pool({
-  connectionString: connectionString,
-  ssl: connectionString ? { rejectUnauthorized: false } : false,
-  connectionTimeoutMillis: 5000, // Supaya tak hang lama kalau DB offline
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
-// Tangkap error latar belakang supaya Node.js tak crash
 pool.on('error', (err) => {
-  console.error('⚠️ DB Pool Background Error:', err.message);
+  console.error('⚠️ DB Pool Warning:', err.message);
 });
 
 module.exports = {
