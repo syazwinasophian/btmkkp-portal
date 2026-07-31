@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const db = require('./db'); // Points to hardcoded PG 18 connection
+const db = require('./db');
 require('dotenv').config();
 
 const app = express();
@@ -120,17 +120,11 @@ app.post('/api/submissions', async (req, res) => {
 // --- 6. DELETE / RESOLVE SUBMISSION (CMS Admin) ---
 app.delete('/api/submissions/:ref_id', async (req, res) => {
     try {
-        await db.query('DELETE FROM submissions WHERE ref_id = $1', [req.params.ref_id]);
+        await db.query('DELETE FROM submissions WHERE ref_id = $1', [req.params.id]);
         res.json({ message: 'Submission resolved/deleted' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    await cleanDuplicateNotices(); // Clean db duplicates on boot
 });
 
 // --- 7. UPDATE SERVICES STATUS (CMS Admin - Simpan Status) ---
@@ -152,4 +146,11 @@ app.post('/api/services', async (req, res) => {
         console.error('Update Services Error:', err.message);
         res.status(500).json({ error: err.message });
     }
+});
+
+// --- START SERVER ---
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, '0.0.0.0', async () => {
+    console.log(`Server running on port ${PORT}`);
+    await cleanDuplicateNotices(); // Clean db duplicates on boot
 });
