@@ -1,16 +1,26 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Force strict connection to PostgreSQL 18 (Port 5433)
-const pool = new Pool({
-    user: process.env.DB_USER || 'postgres',
-    host: process.env.DB_HOST || 'localhost',
-    database: process.env.DB_NAME || 'btmkkp_portal',
-    password: process.env.DB_PASSWORD || '2111',
-    port: 5433, // Directly hardcoded to PostgreSQL 18
-});
+// Standardize configuration to prioritize DATABASE_URL provided by Railway
+const isProduction = process.env.NODE_ENV === 'production' || process.env.DATABASE_URL;
 
-// Test connection and print active database instance on server boot
+const pool = new Pool(
+  process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }, // Required for Railway PostgreSQL
+      }
+    : {
+        // Local fallback settings
+        user: process.env.DB_USER || 'postgres',
+        host: process.env.DB_HOST || 'localhost',
+        database: process.env.DB_NAME || 'btmkkp_portal',
+        password: process.env.DB_PASSWORD || '2111',
+        port: process.env.DB_PORT || 5433,
+      }
+);
+
+// Test connection on server boot
 pool.query('SELECT current_database(), inet_server_port(), version();')
     .then(res => {
         const dbName = res.rows[0].current_database;
