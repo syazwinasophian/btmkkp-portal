@@ -1,13 +1,16 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = process.process ? process.env.DATABASE_URL : process.env.DATABASE_URL;
 
-// On Railway internal network, force SSL to false to prevent handshake errors.
 const poolConfig = connectionString
   ? {
       connectionString: connectionString,
-      ssl: false, // Forces plain TCP over Railway's secure internal network
+      ssl: {
+        rejectUnauthorized: false, // Accepts Railway's SSL certs
+      },
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
     }
   : {
       user: process.env.DB_USER || 'postgres',
@@ -19,7 +22,12 @@ const poolConfig = connectionString
 
 const pool = new Pool(poolConfig);
 
-// Test connection on server boot
+// CRITICAL: Prevent idle pool connection drops from crashing the Node.js process
+pool.on('error', (err, client) => {
+    console.error('⚠️ Unexpected error on idle PostgreSQL client:', err.message);
+});
+
+// Test connection on startup
 pool.query('SELECT current_database(), inet_server_port(), version();')
     .then(res => {
         const dbName = res.rows[0].current_database;
