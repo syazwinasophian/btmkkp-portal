@@ -1,14 +1,15 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Standardize configuration to prioritize DATABASE_URL provided by Railway
-const isProduction = process.env.NODE_ENV === 'production' || process.env.DATABASE_URL;
+// Railway internal database hostnames end with '.railway.internal' and do NOT use SSL.
+const connectionString = process.env.DATABASE_URL;
+const isInternalRailway = connectionString && connectionString.includes('.railway.internal');
 
 const pool = new Pool(
-  process.env.DATABASE_URL
+  connectionString
     ? {
-        connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }, // Required for Railway PostgreSQL
+        connectionString: connectionString,
+        ssl: isInternalRailway ? false : { rejectUnauthorized: false },
       }
     : {
         // Local fallback settings
