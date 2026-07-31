@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const db = require('./config/db'); // Points to hardcoded PG 18 connection
+const db = require('./db'); // Points to hardcoded PG 18 connection
 require('dotenv').config();
 
 const app = express();
