@@ -134,6 +134,6 @@ app.post('/api/services', async (req, res) => {
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on port ${PORT}`);
-    // Jalankan cleanup secara senyap 3 saat lepas server hidup
+    // Run cleanup in background silently
     setTimeout(cleanDuplicateNotices, 3000);
 });
