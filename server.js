@@ -6,9 +6,9 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public')); // Serves frontend static files
+app.use(express.static('public')); // Serves static files dari folder public
 
-// --- OPTIONAL CLEANUP: Run in background WITHOUT blocking server startup ---
+// --- CLEANUP FUNCTION (Dijalankan secara async latar belakang) ---
 function cleanDuplicateNotices() {
     db.query(`
         DELETE FROM notices a
@@ -16,8 +16,8 @@ function cleanDuplicateNotices() {
         WHERE a.id < b.id 
           AND a.title = b.title;
     `)
-    .then(() => console.log('🧹 Duplicate notices cleaned up from database.'))
-    .catch((err) => console.log('⚠️ Cleanup skipped/failed:', err.message));
+    .then(() => console.log('🧹 Duplicate notices cleaned up.'))
+    .catch((err) => console.log('⚠️ Cleanup skipped (Table might not exist yet):', err.message));
 }
 
 // --- 1. GET ALL PORTAL DATA ---
@@ -38,7 +38,7 @@ app.get('/api/portal-data', async (req, res) => {
             submissions: submissions.rows
         });
     } catch (err) {
-        console.error('Portal Data Error:', err);
+        console.error('Portal Data Error:', err.message);
         res.status(500).json({ error: 'Database server error' });
     }
 });
@@ -54,7 +54,7 @@ app.get('/api/notices', async (req, res) => {
         `);
         res.json(result.rows);
     } catch (err) {
-        console.error('Fetch Notices Error:', err);
+        console.error('Fetch Notices Error:', err.message);
         res.status(500).json({ error: 'Failed to fetch notices' });
     }
 });
@@ -130,10 +130,10 @@ app.post('/api/services', async (req, res) => {
     }
 });
 
-// --- START SERVER (FAST STARTUP FOR RAILWAY) ---
+// --- START SERVER ---
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server listening on 0.0.0.0:${PORT}`);
-    // Run cleanup silently in background without blocking web server
+    console.log(`🚀 Server running on port ${PORT}`);
+    // Jalankan cleanup secara senyap 3 saat lepas server hidup
     setTimeout(cleanDuplicateNotices, 3000);
 });
